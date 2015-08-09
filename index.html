@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+</head>
+<body>
+<div class="wrapper">
+    <div class="load_zone">
+        <lebel>Select file:</lebel>
+        <input id="audio_file" type="file" accept="audio/*"/>
+
+    </div>
+
+
+    <div id="content">
+
+        <button class="play-button btn btn-primary"><span class="glyphicon glyphicon-play" aria-hidden="true"></span>Play
+        </button>
+        <button class="stop-button btn btn-primary"><span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
+            Stop
+        </button>
+
+    </div>
+</div>
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"
+        charset="utf-8"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/jquery-ui.min.js"></script>
+<script>
+    (function () {
+        // Declare local variables
+        var context,
+                source,
+                buffer
+        audio_file.onchange = function () {
+            var files = this.files;
+            var file = URL.createObjectURL(files[0]);
+            window.url = file;
+
+            console.log('1');
+
+
+        };
+
+
+        function init() {
+            context = new AudioContext();
+        }
+
+
+        function start() {
+
+            var request = new XMLHttpRequest();
+            request.open("GET", url, true);
+            request.responseType = "arraybuffer";
+            request.onload = function () {
+                var data = request.response;
+                audioRouting(data);
+            };
+
+            request.send();
+        }
+
+
+        function playSound() {
+            source.start(context.currentTime); // play the source immediately
+        }
+
+        function stop() {
+            source.stop(context.currentTime); // stop the source immediately
+        }
+
+        // Mouse Events for the play/stop buttons
+        document.querySelector('.play-button').addEventListener('click', start);
+        document.querySelector('.stop-button').addEventListener('click', stop);
+
+
+        function audioRouting(data) {
+            source = context.createBufferSource();
+            context.decodeAudioData(data, function (buffer) {
+                source.buffer = buffer;
+                source.connect(context.destination);
+                playSound(source);
+            });
+        }
+
+
+        init();
+
+    }());
+</script>
+</body>
+</html>
