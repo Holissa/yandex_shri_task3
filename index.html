@@ -12,6 +12,8 @@
         <lebel>Select file:</lebel>
         <input id="audio_file" type="file" accept="audio/*"/>
 
+        <div id="drop_zone">Drop files here</div>
+        <output id="list"></output>
     </div>
 
 
@@ -41,7 +43,6 @@
             window.url = file;
 
             console.log('1');
-
 
         };
 
@@ -91,6 +92,31 @@
         init();
 
     }());
+
+    function handleFileSelect(evt) {
+        evt.stopPropagation();
+        evt.preventDefault();
+
+        var files = evt.dataTransfer.files;
+        var file = URL.createObjectURL(files[0]);
+        window.url = file;
+        var output = [];
+        for (var i = 0, f; f = files[i]; i++) {
+            output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ')  ',
+                    '</li>');
+        }
+        document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+    }
+
+    function handleDragOver(evt) {
+        evt.stopPropagation();
+        evt.preventDefault();
+        evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+    }
+
+    var dropZone = document.getElementById('drop_zone');
+    dropZone.addEventListener('dragover', handleDragOver, false);
+    dropZone.addEventListener('drop', handleFileSelect, false);
 </script>
 </body>
 </html>
